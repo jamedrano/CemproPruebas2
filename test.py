@@ -137,10 +137,10 @@ if uploaded_file is not None:
      st.write('###### Dimensiones de la Data :',data.shape)
 
   with tab3:
-   molino = st.radio("** Seleccione Molino **", data['Molino'].unique())
-   tipo = st.radio("** Seleccione Tipo de Cemento **", data['Tipo de Cemento'].unique())
+   molino = st.radio("** Seleccione Molino **", data['Línea'].unique())
+   tipo = st.radio("** Seleccione Tipo de Cemento **", data['PRODUCTO'].unique())
    tipograf = st.radio("** Seleccione Tipo de Grafico **", ['Cajas', 'Histograma','Tendencia'])
-   subdatos = data[(data['Tipo de Cemento']==tipo)&(data['Molino']==molino)]
+   subdatos = data[(data['PRODUCTO']==tipo)&(data['Línea']==molino)]
    st.write( '### 3. Exploración Gráfica ')
    if tipograf == "Cajas":
     fig, axs = plt.subplots(2,2)
@@ -184,12 +184,12 @@ if uploaded_file is not None:
     st.pyplot(fig)
 
   with tab4:
-   molino2 = st.radio("** Seleccione Molino a Modelar **", data['Molino'].unique())
-   tipo2 = st.radio("** Seleccione Tipo de Cemento a Modelar **", data['Tipo de Cemento'].unique())
+   molino2 = st.radio("** Seleccione Molino a Modelar **", data['Línea'].unique())
+   tipo2 = st.radio("** Seleccione Tipo de Cemento a Modelar **", data['PRODUCTO'].unique())
 
    edad =  st.radio("** Edad a Predecir **", ["1 dia", "3 dias", "7 dias", "28 dias"])
    
-   subdatos2 = data[(data['Tipo de Cemento']==tipo2)&(data['Molino']==molino2)]
+   subdatos2 = data[(data['PRODUCTO']==tipo2)&(data['Línea']==molino2)]
     
    if edad == "1 dia":
     quitar = ['Fecha','Tipo de Cemento','Molino','R1D','R3D','R7D','R28D']
