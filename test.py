@@ -18,7 +18,7 @@ def load_data(uploaded_file,sh):
  variables = [0,3,4,10,13,16,17,28,29,30,31,34,35,36,37,38]
  datos = data.iloc[:,variables]
  datos.columns = datos.columns.str.strip()
- for col in data.columns:
+ for col in datos.columns:
   if datos[col].dtype == 'O':
    datos[col] = datos[col].str.strip()    
  return datos
