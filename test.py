@@ -13,8 +13,10 @@ import pickle
 import xgboost as xgb
 
 @st.cache
-def load_data(uploaded_file,sh,h):
- data = pd.read_excel(uploaded_file,header=h,sheet_name=sh,engine='openpyxl')
+def load_data(uploaded_file,sh):
+ data = pd.read_excel(uploaded_file,skiprows=4,sheet_name=sh,engine='openpyxl')
+ variables = [0,3,4,10,13,16,17,28,29,30,31,34,35,36,37,38]
+ datos = data.iloc[:,variables]
  data.columns = data.columns.str.strip()
  for col in data.columns:
   if data[col].dtype == 'O':
@@ -104,7 +106,7 @@ if uploaded_file is not None:
   sh = st.sidebar.selectbox("*Que hoja contiene los datos?*",pd.ExcelFile(uploaded_file).sheet_names)
   h = 0
   
-  data = load_data(uploaded_file,sh,h)
+  data = load_data(uploaded_file,sh)
    
   with tab1:
     st.write( '### 1. Datos Cargados ')
