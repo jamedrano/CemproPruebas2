@@ -17,11 +17,11 @@ def load_data(uploaded_file,sh):
  data = pd.read_excel(uploaded_file,skiprows=4,sheet_name=sh,engine='openpyxl')
  variables = [0,3,4,10,13,16,17,28,29,30,31,34,35,36,37,38]
  datos = data.iloc[:,variables]
- data.columns = data.columns.str.strip()
+ datos.columns = datos.columns.str.strip()
  for col in data.columns:
-  if data[col].dtype == 'O':
-   data[col] = data[col].str.strip()    
- return data
+  if datos[col].dtype == 'O':
+   datos[col] = datos[col].str.strip()    
+ return datos
 
 #@st.cache_resource
 def load_model(uploaded_file):
