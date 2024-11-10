@@ -16,12 +16,12 @@ import xgboost as xgb
 def load_data(uploaded_file,sh):
  data = pd.read_excel(uploaded_file,skiprows=4,sheet_name=sh,engine='openpyxl')
  variables = [0,3,4,10,13,16,17,28,29,30,31,34,35,36,37,38]
- datos = data.iloc[:,variables]
- datos.columns = datos.columns.str.strip()
- for col in datos.columns:
-  if datos[col].dtype == 'O':
-   datos[col] = datos[col].str.strip()    
- return datos
+ cemdatos = data.iloc[:,variables]
+ cemdatos.columns = cemdatos.columns.str.strip()
+ for col in cemdatos.columns:
+  if cemdatos[col].dtype == 'O':
+   cemdatos[col] = cemdatos[col].str.strip()    
+ return cemdatos
 
 #@st.cache_resource
 def load_model(uploaded_file):
@@ -104,7 +104,7 @@ uploaded_file = st.sidebar.file_uploader("*Subir Archivo Aqui*")
 
 if uploaded_file is not None:
   sh = st.sidebar.selectbox("*Que hoja contiene los datos?*",pd.ExcelFile(uploaded_file).sheet_names)
-  h = 0
+  
   
   data = load_data(uploaded_file,sh)
    
