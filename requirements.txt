@@ -9,4 +9,4 @@ xlsxwriter
 pygwalker
 pyxlsb
 PyGithub
-base64
+pybase64
