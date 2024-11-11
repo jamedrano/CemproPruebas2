@@ -11,6 +11,8 @@ from sklearn.model_selection import train_test_split
 import sklearn.metrics as mt
 import pickle
 import xgboost as xgb
+from github import Github
+import base64
 
 @st.cache
 def load_data(uploaded_file,sh):
