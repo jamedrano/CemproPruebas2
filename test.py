@@ -238,7 +238,7 @@ with tab3:
 
 
 # Add a fourth tab for predictive modeling
-tab4 = st.tab("Predictive Modeling")
+#tab4 = st.tab("Predictive Modeling")
 
 with tab4:
     if 'cleaned_data' in locals():
@@ -371,8 +371,6 @@ with tab4:
         st.info("Please upload and clean the data in Tab 1 first.")
 
 
-with tab4:
-    st.write("Model Training")
 
 # Footer
 st.markdown("---")
