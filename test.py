@@ -56,10 +56,15 @@ if uploaded_file is not None:
             if selected_tipo != "All":
                 filtered_data = filtered_data[filtered_data['TIPO'] == selected_tipo]
 
-            # Cleaning: Remove rows with 0 or invalid values
+            # Cleaning: Remove rows with 0, negative, or invalid values
             st.subheader("Clean Data")
-            st.markdown("Removing rows containing **0** or invalid values in any column.")
-            cleaned_data = filtered_data.replace(0, pd.NA).dropna()
+            st.markdown("Removing rows containing **0**, **negative values**, or **invalid values** in any column.")
+            cleaned_data = filtered_data.copy()
+            cleaned_data = cleaned_data.replace(0, pd.NA)  # Replace 0 with NaN
+            cleaned_data = cleaned_data.applymap(
+                lambda x: pd.NA if isinstance(x, (int, float)) and x < 0 else x
+            )  # Replace negatives with NaN
+            cleaned_data = cleaned_data.dropna()  # Drop rows with any NaN values
 
             # Column Selection for Exclusion
             st.subheader("Select Columns to Exclude")
@@ -71,6 +76,11 @@ if uploaded_file is not None:
 
             # Exclude the selected columns
             training_data = cleaned_data.drop(columns=columns_to_remove)
+
+            # Display the number of valid rows remaining
+            st.subheader("Summary of Cleaning Results")
+            num_rows = training_data.shape[0]
+            st.markdown(f"**Number of valid rows left in the training data:** {num_rows}")
 
             # Display the cleaned and final training data
             st.subheader("Final Training Data")
