@@ -36,7 +36,7 @@ def filter_data_by_date(data, cutoff_date):
     return data[data['FECHA'] >= cutoff_date]
 
 # Add tabs to the app
-tab1, tab2, tab3, tab4 = st.tabs(["Data Cleaning", "Visualizations", "Descriptive Analytics", "Model Training"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["Data Cleaning", "Visualizations", "Descriptive Analytics", "Model Training","In Sample Predictions"])
 
 # Tab 1: Data Cleaning
 with tab1:
@@ -238,137 +238,6 @@ with tab3:
         st.info("Please upload and clean the data in Tab 1 first.")
 
 # Tab 4:  Model Training
-'''
-with tab4:
-    if 'cleaned_data' in locals():
-        st.subheader("Predictive Modeling by MOLINO and TIPO")
-        st.markdown(
-            "This section trains sequential models to predict the resistances (R1D, R3D, R7D, R28D) "
-            "for each combination of **MOLINO** and **TIPO** using all available data."
-        )
-
-        # Ensure directories for saving models
-        #model_dir = "trained_models"
-        #os.makedirs(model_dir, exist_ok=True)
-
-        # Segment data by MOLINO and TIPO
-        for (molino, tipo), group_data in cleaned_data.groupby(['MOLINO', 'TIPO']):
-            st.markdown(f"### MOLINO: {molino}, TIPO: {tipo}")
-
-            # Drop rows with missing values (data cleaning handled in Tab 1)
-            segment_data = group_data.dropna()
-
-            # Initialize dictionary for storing trained models
-            models = {}
-
-            # Prepare variables for sequential modeling
-            features = [col for col in segment_data.columns if col not in ['R1D', 'R3D', 'R7D', 'R28D', 'MOLINO', 'TIPO','FECHA']]
-
-            # Stage 1: Train model for R1D
-            st.markdown("#### Stage 1: Predict R1D")
-            X_R1D = segment_data[features]
-            y_R1D = segment_data['R1D']
-            model_R1D = XGBRegressor(objective='reg:squarederror')
-            model_R1D.fit(X_R1D, y_R1D)
-            models['R1D'] = model_R1D
-
-            # Display feature importance for R1D
-            st.markdown("**Feature Importance for R1D**")
-            importance_R1D = pd.DataFrame({
-                'Feature': X_R1D.columns,
-                'Importance': model_R1D.feature_importances_
-            }).sort_values(by='Importance', ascending=False)
-            st.write(importance_R1D)
-
-            # Plot feature importance for R1D
-            fig, ax = plt.subplots()
-            ax.barh(importance_R1D['Feature'], importance_R1D['Importance'])
-            ax.set_title("Feature Importance for R1D")
-            ax.set_xlabel("Importance")
-            ax.set_ylabel("Feature")
-            st.pyplot(fig)
-
-            # Stage 2: Train model for R3D
-            st.markdown("#### Stage 2: Predict R3D")
-            X_R3D = segment_data[features + ['R1D']]
-            y_R3D = segment_data['R3D']
-            model_R3D = XGBRegressor(objective='reg:squarederror')
-            model_R3D.fit(X_R3D, y_R3D)
-            models['R3D'] = model_R3D
-
-            # Display feature importance for R3D
-            st.markdown("**Feature Importance for R3D**")
-            importance_R3D = pd.DataFrame({
-                'Feature': X_R3D.columns,
-                'Importance': model_R3D.feature_importances_
-            }).sort_values(by='Importance', ascending=False)
-            st.write(importance_R3D)
-
-            # Plot feature importance for R3D
-            fig, ax = plt.subplots()
-            ax.barh(importance_R3D['Feature'], importance_R3D['Importance'])
-            ax.set_title("Feature Importance for R3D")
-            ax.set_xlabel("Importance")
-            ax.set_ylabel("Feature")
-            st.pyplot(fig)
-
-            # Stage 3: Train model for R7D
-            st.markdown("#### Stage 3: Predict R7D")
-            X_R7D = segment_data[features + ['R1D', 'R3D']]
-            y_R7D = segment_data['R7D']
-            model_R7D = XGBRegressor(objective='reg:squarederror')
-            model_R7D.fit(X_R7D, y_R7D)
-            models['R7D'] = model_R7D
-
-            # Display feature importance for R7D
-            st.markdown("**Feature Importance for R7D**")
-            importance_R7D = pd.DataFrame({
-                'Feature': X_R7D.columns,
-                'Importance': model_R7D.feature_importances_
-            }).sort_values(by='Importance', ascending=False)
-            st.write(importance_R7D)
-
-            # Plot feature importance for R7D
-            fig, ax = plt.subplots()
-            ax.barh(importance_R7D['Feature'], importance_R7D['Importance'])
-            ax.set_title("Feature Importance for R7D")
-            ax.set_xlabel("Importance")
-            ax.set_ylabel("Feature")
-            st.pyplot(fig)
-
-            # Stage 4: Train model for R28D
-            st.markdown("#### Stage 4: Predict R28D")
-            X_R28D = segment_data[features + ['R1D', 'R3D', 'R7D']]
-            y_R28D = segment_data['R28D']
-            model_R28D = XGBRegressor(objective='reg:squarederror')
-            model_R28D.fit(X_R28D, y_R28D)
-            models['R28D'] = model_R28D
-
-            # Display feature importance for R28D
-            st.markdown("**Feature Importance for R28D**")
-            importance_R28D = pd.DataFrame({
-                'Feature': X_R28D.columns,
-                'Importance': model_R28D.feature_importances_
-            }).sort_values(by='Importance', ascending=False)
-            st.write(importance_R28D)
-
-            # Plot feature importance for R28D
-            fig, ax = plt.subplots()
-            ax.barh(importance_R28D['Feature'], importance_R28D['Importance'])
-            ax.set_title("Feature Importance for R28D")
-            ax.set_xlabel("Importance")
-            ax.set_ylabel("Feature")
-            st.pyplot(fig)
-
-            # Save models to .pkl files
-            #for response, model in models.items():
-            #    model_path = os.path.join(model_dir, f"model_{molino}_{tipo}_{response}.pkl")
-            #    joblib.dump(model, model_path)
-            #    st.success(f"Model for {response} saved to {model_path}")
-
-    else:
-        st.info("Please upload and clean the data in Tab 1 first.")
-'''
 
 with tab4:
     if 'cleaned_data' in locals():
@@ -496,6 +365,65 @@ with tab4:
 
     else:
         st.info("Please upload and clean the data in Tab 1 first.")
+
+# Tab 5: In-Sample Predictions and RMSE
+
+with tab5:
+    st.subheader("In-Sample Predictions and RMSE")
+    st.markdown("""
+        This tab displays the in-sample predictions for all models and calculates the RMSE (Root Mean Square Error) 
+        for each prediction stage.
+    """)
+
+    # Check if trained models exist
+    if 'trained_models' in st.session_state:
+        trained_models = st.session_state['trained_models']
+
+        # Loop through segmented datasets
+        for (molino, tipo), data in segmented_data.items():
+            st.markdown(f"### Segment: MOLINO = {molino}, TIPO = {tipo}")
+
+            # Prepare data for prediction
+            segment_data = data.copy()
+            segment_features = [col for col in segment_data.columns if col not in ['R1D', 'R3D', 'R7D', 'R28D', 'MOLINO', 'TIPO']]
+            
+            # Ensure features are numeric (handled in Tab 4)
+            segment_data = segment_data.dropna()
+            
+            # Store predictions and RMSE
+            predictions = {}
+            rmse_values = {}
+
+            for i, response_var in enumerate(['R1D', 'R3D', 'R7D', 'R28D']):
+                # Define features for the current stage
+                stage_features = segment_features + [resp for resp in ['R1D', 'R3D', 'R7D'][:i]]
+                
+                # Model and actual values
+                model = trained_models[(molino, tipo)][response_var]
+                X = segment_data[stage_features]
+                y_actual = segment_data[response_var]
+
+                # Predict values
+                y_pred = model.predict(X)
+                predictions[response_var] = y_pred
+
+                # Calculate RMSE
+                rmse = ((y_actual - y_pred) ** 2).mean() ** 0.5
+                rmse_values[response_var] = rmse
+
+            # Display RMSE table
+            st.markdown("#### RMSE for Each Model")
+            st.write(pd.DataFrame({'Response Variable': rmse_values.keys(), 'RMSE': rmse_values.values()}))
+
+            # Display predictions table
+            st.markdown("#### Predictions vs Actual Values")
+            comparison = segment_data[['R1D', 'R3D', 'R7D', 'R28D']].copy()
+            for resp in ['R1D', 'R3D', 'R7D', 'R28D']:
+                comparison[f"{resp}_PRED"] = predictions[resp]
+            st.write(comparison)
+    else:
+        st.warning("No models found. Please train the models in Tab 4 first.")
+
 
 # Footer
 st.markdown("---")
