@@ -264,6 +264,19 @@ with tab4:
 
             # Prepare variables for sequential modeling
             features = [col for col in segment_data.columns if col not in ['R1D', 'R3D', 'R7D', 'R28D', 'MOLINO', 'TIPO','FECHA']]
+            numeric_features = []
+            for feature in features:
+                if segment_data[feature].dtype == 'object':
+                    try:
+                        # Attempt to convert to numeric
+                        segment_data[feature] = pd.to_numeric(segment_data[feature], errors='coerce')
+                    except Exception as e:
+                        st.error(f"Error converting feature {feature}: {e}")
+                # Check if feature is numeric after conversion
+                if segment_data[feature].dtype in [float, int]:
+                    numeric_features.append(feature)
+            features = numeric_features
+                        
 
             # Stage 1: Train model for R1D
             st.markdown("#### Stage 1: Predict R1D")
