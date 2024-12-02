@@ -160,9 +160,27 @@ with tab3:
 
         st.markdown("**TIPO Counts**")
         st.write(tipo_counts)
+
+        # Segmented descriptive statistics
+        st.subheader("Segmented Descriptive Statistics")
+        st.markdown("Descriptive statistics for resistance columns segmented by **MOLINO** and **TIPO**.")
+
+        # Segment by MOLINO
+        st.subheader("Segmented by MOLINO")
+        for molino, group_data in cleaned_data.groupby('MOLINO'):
+            st.markdown(f"**MOLINO: {molino}**")
+            molino_stats = group_data[resistance_columns].describe()
+            st.write(molino_stats)
+
+        # Segment by TIPO
+        st.subheader("Segmented by TIPO")
+        for tipo, group_data in cleaned_data.groupby('TIPO'):
+            st.markdown(f"**TIPO: {tipo}**")
+            tipo_stats = group_data[resistance_columns].describe()
+            st.write(tipo_stats)
     else:
         st.info("Please upload and clean the data in Tab 1 first.")
 
 # Footer
 st.markdown("---")
-st.markdown("Developed with ❤️ using Streamlit.")
+st.markdown("Developed by CepSA with ❤️ using Streamlit.")
