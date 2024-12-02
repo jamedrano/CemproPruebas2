@@ -250,7 +250,7 @@ with tab4:
 
         # Ensure directories for saving models
         model_dir = "trained_models"
-        os.makedirs(model_dir, exist_ok=True)
+        #os.makedirs(model_dir, exist_ok=True)
 
         # Segment data by MOLINO and TIPO
         for (molino, tipo), group_data in cleaned_data.groupby(['MOLINO', 'TIPO']):
