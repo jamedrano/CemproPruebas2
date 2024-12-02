@@ -263,7 +263,7 @@ with tab4:
             models = {}
 
             # Prepare variables for sequential modeling
-            features = [col for col in segment_data.columns if col not in ['R1D', 'R3D', 'R7D', 'R28D', 'MOLINO', 'TIPO']]
+            features = [col for col in segment_data.columns if col not in ['R1D', 'R3D', 'R7D', 'R28D', 'MOLINO', 'TIPO','FECHA']]
 
             # Stage 1: Train model for R1D
             st.markdown("#### Stage 1: Predict R1D")
