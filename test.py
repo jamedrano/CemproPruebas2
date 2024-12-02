@@ -1,11 +1,12 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # App title
 st.title("Cement Compression Strength: Data Viewer, Filtering, and Cleaning")
 
 # Add tabs to the app
-tab1, tab2, tab3 = st.tabs(["Data Cleaning", "Tab 2", "Tab 3"])
+tab1, tab2, tab3 = st.tabs(["Data Cleaning", "Visualizations", "Tab 3"])
 
 # Tab 1: Data Cleaning
 with tab1:
@@ -29,7 +30,7 @@ with tab1:
             data.columns = data.columns.str.strip().str.upper()
 
             # Ensure necessary columns exist
-            required_columns = ['FECHA']
+            required_columns = ['FECHA', 'MOLINO', 'TIPO', 'R1D', 'R3D', 'R7D', 'R28D']
             if all(col in data.columns for col in required_columns):
                 # Convert 'FECHA' column to datetime format
                 data['FECHA'] = pd.to_datetime(data['FECHA'], errors='coerce')
@@ -57,11 +58,6 @@ with tab1:
                 )  # Replace negatives with NaN
                 cleaned_data = cleaned_data.dropna()  # Drop rows with any NaN values
 
-                # Display the number of valid rows remaining
-                st.subheader("Summary of Cleaning Results")
-                num_rows = cleaned_data.shape[0]
-                st.markdown(f"**Number of valid rows left in the cleaned data:** {num_rows}")
-
                 # Display the cleaned data
                 st.subheader("Cleaned Data")
                 st.write(cleaned_data)
@@ -73,15 +69,61 @@ with tab1:
     else:
         st.info("Please upload an Excel file to proceed.")
 
-# Placeholder content for other tabs
+# Tab 2: Visualizations
 with tab2:
-    st.subheader("Tab 2 Content")
-    st.write("This is Tab 2. Additional functionality can be added here.")
+    if 'cleaned_data' in locals():
+        st.subheader("Resistance Data Visualizations")
+        st.markdown("Filter by **MOLINO** and **TIPO** and choose a chart type to visualize resistance data.")
 
+        # Filter options
+        molinos = ['All'] + list(cleaned_data['MOLINO'].dropna().unique())
+        selected_molino = st.selectbox("Select MOLINO:", molinos)
+        tipos = ['All'] + list(cleaned_data['TIPO'].dropna().unique())
+        selected_tipo = st.selectbox("Select TIPO:", tipos)
+
+        # Filter the data
+        filtered_viz_data = cleaned_data.copy()
+        if selected_molino != 'All':
+            filtered_viz_data = filtered_viz_data[filtered_viz_data['MOLINO'] == selected_molino]
+        if selected_tipo != 'All':
+            filtered_viz_data = filtered_viz_data[filtered_viz_data['TIPO'] == selected_tipo]
+
+        # Select chart type
+        chart_type = st.radio("Select Chart Type:", ['Histogram', 'Boxplot', 'Trend Chart'])
+
+        # Resistance columns
+        resistance_columns = ['R1D', 'R3D', 'R7D', 'R28D']
+
+        # Generate visualizations
+        fig, axes = plt.subplots(2, 2, figsize=(10, 8))
+        axes = axes.flatten()
+
+        for i, col in enumerate(resistance_columns):
+            if chart_type == 'Histogram':
+                axes[i].hist(filtered_viz_data[col], bins=20, alpha=0.7, color='blue')
+                axes[i].set_title(f'{col} - Histogram')
+                axes[i].set_xlabel('Resistance')
+                axes[i].set_ylabel('Frequency')
+            elif chart_type == 'Boxplot':
+                axes[i].boxplot(filtered_viz_data[col].dropna(), vert=False)
+                axes[i].set_title(f'{col} - Boxplot')
+                axes[i].set_xlabel('Resistance')
+            elif chart_type == 'Trend Chart':
+                axes[i].plot(filtered_viz_data['FECHA'], filtered_viz_data[col], marker='o', linestyle='-')
+                axes[i].set_title(f'{col} - Trend Chart')
+                axes[i].set_xlabel('Date')
+                axes[i].set_ylabel('Resistance')
+
+        plt.tight_layout()
+        st.pyplot(fig)
+    else:
+        st.info("Please upload and clean the data in Tab 1 first.")
+
+# Placeholder content for Tab 3
 with tab3:
     st.subheader("Tab 3 Content")
     st.write("This is Tab 3. Additional functionality can be added here.")
 
 # Footer
 st.markdown("---")
-st.markdown("Developed by CepSA with ❤️ using Streamlit.")
+st.markdown("Developed with ❤️ using Streamlit.")
