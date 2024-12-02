@@ -367,63 +367,66 @@ with tab4:
         st.info("Please upload and clean the data in Tab 1 first.")
 
 # Tab 5: In-Sample Predictions and RMSE
-
 with tab5:
-    st.subheader("In-Sample Predictions and RMSE")
-    st.markdown("""
-        This tab displays the in-sample predictions for all models and calculates the RMSE (Root Mean Square Error) 
-        for each prediction stage.
-    """)
+    if 'models' in st.session_state and st.session_state.models:
+        st.subheader("In-Sample Predictions and RMSE for Trained Models")
+        st.markdown(
+            "This section displays in-sample predictions and calculates RMSE for the sequential models "
+            "trained for each combination of **MOLINO** and **TIPO**."
+        )
 
-    # Check if trained models exist
-    if 'trained_models' in st.session_state:
-        trained_models = st.session_state['trained_models']
-
-        # Loop through segmented datasets
-        for (molino, tipo), data in segmented_data.items():
-            st.markdown(f"### Segment: MOLINO = {molino}, TIPO = {tipo}")
-
-            # Prepare data for prediction
-            segment_data = data.copy()
-            segment_features = [col for col in segment_data.columns if col not in ['R1D', 'R3D', 'R7D', 'R28D', 'MOLINO', 'TIPO']]
+        for (molino, tipo), models in st.session_state.models.items():
+            st.markdown(f"### MOLINO: {molino}, TIPO: {tipo}")
             
-            # Ensure features are numeric (handled in Tab 4)
-            segment_data = segment_data.dropna()
+            # Retrieve data for the current combination
+            segment_data = cleaned_data[(cleaned_data['MOLINO'] == molino) & (cleaned_data['TIPO'] == tipo)].dropna()
             
-            # Store predictions and RMSE
-            predictions = {}
-            rmse_values = {}
+            features = [col for col in segment_data.columns if col not in ['R1D', 'R3D', 'R7D', 'R28D', 'MOLINO', 'TIPO', 'FECHA']]
+            
+            # Stage 1: Predict R1D
+            st.markdown("#### Stage 1: Predictions for R1D")
+            X_R1D = segment_data[features]
+            y_R1D = segment_data['R1D']
+            y_pred_R1D = models['R1D'].predict(X_R1D)
+            rmse_R1D = mean_squared_error(y_R1D, y_pred_R1D, squared=False)
+            st.write(f"RMSE for R1D: {rmse_R1D:.2f}")
+            st.write(pd.DataFrame({'Actual': y_R1D, 'Predicted': y_pred_R1D}))
 
-            for i, response_var in enumerate(['R1D', 'R3D', 'R7D', 'R28D']):
-                # Define features for the current stage
-                stage_features = segment_features + [resp for resp in ['R1D', 'R3D', 'R7D'][:i]]
-                
-                # Model and actual values
-                model = trained_models[(molino, tipo)][response_var]
-                X = segment_data[stage_features]
-                y_actual = segment_data[response_var]
+            # Stage 2: Predict R3D
+            st.markdown("#### Stage 2: Predictions for R3D")
+            X_R3D = segment_data[features + ['R1D']]
+            X_R3D['R1D'] = y_pred_R1D  # Use predictions for R1D
+            y_R3D = segment_data['R3D']
+            y_pred_R3D = models['R3D'].predict(X_R3D)
+            rmse_R3D = mean_squared_error(y_R3D, y_pred_R3D, squared=False)
+            st.write(f"RMSE for R3D: {rmse_R3D:.2f}")
+            st.write(pd.DataFrame({'Actual': y_R3D, 'Predicted': y_pred_R3D}))
 
-                # Predict values
-                y_pred = model.predict(X)
-                predictions[response_var] = y_pred
+            # Stage 3: Predict R7D
+            st.markdown("#### Stage 3: Predictions for R7D")
+            X_R7D = segment_data[features + ['R1D', 'R3D']]
+            X_R7D['R1D'] = y_pred_R1D  # Use predictions for R1D
+            X_R7D['R3D'] = y_pred_R3D  # Use predictions for R3D
+            y_R7D = segment_data['R7D']
+            y_pred_R7D = models['R7D'].predict(X_R7D)
+            rmse_R7D = mean_squared_error(y_R7D, y_pred_R7D, squared=False)
+            st.write(f"RMSE for R7D: {rmse_R7D:.2f}")
+            st.write(pd.DataFrame({'Actual': y_R7D, 'Predicted': y_pred_R7D}))
 
-                # Calculate RMSE
-                rmse = ((y_actual - y_pred) ** 2).mean() ** 0.5
-                rmse_values[response_var] = rmse
+            # Stage 4: Predict R28D
+            st.markdown("#### Stage 4: Predictions for R28D")
+            X_R28D = segment_data[features + ['R1D', 'R3D', 'R7D']]
+            X_R28D['R1D'] = y_pred_R1D  # Use predictions for R1D
+            X_R28D['R3D'] = y_pred_R3D  # Use predictions for R3D
+            X_R28D['R7D'] = y_pred_R7D  # Use predictions for R7D
+            y_R28D = segment_data['R28D']
+            y_pred_R28D = models['R28D'].predict(X_R28D)
+            rmse_R28D = mean_squared_error(y_R28D, y_pred_R28D, squared=False)
+            st.write(f"RMSE for R28D: {rmse_R28D:.2f}")
+            st.write(pd.DataFrame({'Actual': y_R28D, 'Predicted': y_pred_R28D}))
 
-            # Display RMSE table
-            st.markdown("#### RMSE for Each Model")
-            st.write(pd.DataFrame({'Response Variable': rmse_values.keys(), 'RMSE': rmse_values.values()}))
-
-            # Display predictions table
-            st.markdown("#### Predictions vs Actual Values")
-            comparison = segment_data[['R1D', 'R3D', 'R7D', 'R28D']].copy()
-            for resp in ['R1D', 'R3D', 'R7D', 'R28D']:
-                comparison[f"{resp}_PRED"] = predictions[resp]
-            st.write(comparison)
     else:
-        st.warning("No models found. Please train the models in Tab 4 first.")
-
+        st.info("No trained models found. Please train models in Tab 4 first.")
 
 # Footer
 st.markdown("---")
