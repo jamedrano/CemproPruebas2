@@ -119,4 +119,30 @@ with tab2:
         for i, col in enumerate(resistance_columns):
             if chart_type == 'Histogram':
                 axes[i].hist(filtered_viz_data[col], bins=20, alpha=0.7, color='blue')
-                axes[i].set_tit
+                axes[i].set_title(f'{col} - Histogram')
+                axes[i].set_xlabel('Resistance')
+                axes[i].set_ylabel('Frequency')
+            elif chart_type == 'Boxplot':
+                axes[i].boxplot(filtered_viz_data[col].dropna(), vert=True)  # Set boxplot to vertical
+                axes[i].set_title(f'{col} - Boxplot')
+                axes[i].set_ylabel('Resistance')
+            elif chart_type == 'Trend Chart':
+                axes[i].plot(filtered_viz_data['FECHA'], filtered_viz_data[col], marker='o', linestyle='-')
+                axes[i].set_title(f'{col} - Trend Chart')
+                axes[i].set_xlabel('Date')
+                axes[i].set_ylabel('Resistance')
+                axes[i].tick_params(axis='x', rotation=90)  # Rotate x-axis labels vertically
+
+        plt.tight_layout()
+        st.pyplot(fig)
+    else:
+        st.info("Please upload and clean the data in Tab 1 first.")
+
+# Placeholder content for Tab 3
+with tab3:
+    st.subheader("Tab 3 Content")
+    st.write("This is Tab 3. Additional functionality can be added here.")
+
+# Footer
+st.markdown("---")
+st.markdown("Developed with ❤️ using Streamlit.")
