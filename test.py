@@ -392,6 +392,14 @@ with tab5:
             st.write(f"RMSE for R1D: {rmse_R1D:.2f}")
             st.write(pd.DataFrame({'Actual': y_R1D, 'Predicted': y_pred_R1D}))
 
+            # Scatter plot for R1D
+            fig, ax = plt.subplots()
+            ax.scatter(y_R1D, y_pred_R1D, alpha=0.7)            
+            ax.set_title("Actual vs Predicted for R1D")
+            ax.set_xlabel("Actual R1D")
+            ax.set_ylabel("Predicted R1D")
+            st.pyplot(fig)
+            
             # Stage 2: Predict R3D
             st.markdown("#### Stage 2: Predictions for R3D")
             X_R3D = segment_data[features + ['R1D']]
@@ -401,6 +409,14 @@ with tab5:
             rmse_R3D = mt.mean_squared_error(y_R3D, y_pred_R3D, squared=False)
             st.write(f"RMSE for R3D: {rmse_R3D:.2f}")
             st.write(pd.DataFrame({'Actual': y_R3D, 'Predicted': y_pred_R3D}))
+
+            # Scatter plot for R3D
+            fig, ax = plt.subplots()
+            ax.scatter(y_R3D, y_pred_R3D, alpha=0.7)            
+            ax.set_title("Actual vs Predicted for R3D")
+            ax.set_xlabel("Actual R3D")
+            ax.set_ylabel("Predicted R3D")
+            st.pyplot(fig)
 
             # Stage 3: Predict R7D
             st.markdown("#### Stage 3: Predictions for R7D")
@@ -413,6 +429,15 @@ with tab5:
             st.write(f"RMSE for R7D: {rmse_R7D:.2f}")
             st.write(pd.DataFrame({'Actual': y_R7D, 'Predicted': y_pred_R7D}))
 
+            # Scatter plot for R7D
+            fig, ax = plt.subplots()
+            ax.scatter(y_R7D, y_pred_R7D, alpha=0.7)            
+            ax.set_title("Actual vs Predicted for R7D")
+            ax.set_xlabel("Actual R7D")
+            ax.set_ylabel("Predicted R7D")
+            st.pyplot(fig)
+
+
             # Stage 4: Predict R28D
             st.markdown("#### Stage 4: Predictions for R28D")
             X_R28D = segment_data[features + ['R1D', 'R3D', 'R7D']]
@@ -424,6 +449,14 @@ with tab5:
             rmse_R28D = mt.mean_squared_error(y_R28D, y_pred_R28D, squared=False)
             st.write(f"RMSE for R28D: {rmse_R28D:.2f}")
             st.write(pd.DataFrame({'Actual': y_R28D, 'Predicted': y_pred_R28D}))
+
+            # Scatter plot for R28D
+            fig, ax = plt.subplots()
+            ax.scatter(y_R28D, y_pred_R28D, alpha=0.7)            
+            ax.set_title("Actual vs Predicted for R28D")
+            ax.set_xlabel("Actual R28D")
+            ax.set_ylabel("Predicted R28D")
+            st.pyplot(fig)         
 
     else:
         st.info("No trained models found. Please train models in Tab 4 first.")
