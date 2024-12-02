@@ -20,38 +20,41 @@ if uploaded_file is not None:
         # Load the selected sheet
         data = pd.read_excel(uploaded_file, sheet_name=selected_sheet)
 
+        # Clean column names: remove extra spaces and capitalize
+        data.columns = data.columns.str.strip().str.upper()
+
         # Ensure necessary columns exist
-        required_columns = ['Fecha', 'Molino', 'Tipo']
+        required_columns = ['FECHA', 'MOLINO', 'TIPO']
         if all(col in data.columns for col in required_columns):
-            # Convert 'Fecha' column to datetime format
-            data['Fecha'] = pd.to_datetime(data['Fecha'], errors='coerce')
-            data = data.dropna(subset=['Fecha'])
+            # Convert 'FECHA' column to datetime format
+            data['FECHA'] = pd.to_datetime(data['FECHA'], errors='coerce')
+            data = data.dropna(subset=['FECHA'])
 
             # Display the data before filtering
-            st.subheader("Preview of Original Data")
+            st.subheader("Preview of Original Data (with Cleaned Column Names)")
             st.write(data)
 
             # Filter by date
             st.subheader("Filter Data by Date")
             cutoff_date = st.date_input(
                 "Select a cutoff date:",
-                value=data['Fecha'].min().date() if not data.empty else None,
+                value=data['FECHA'].min().date() if not data.empty else None,
             )
-            filtered_data = data[data['Fecha'] >= pd.Timestamp(cutoff_date)]
+            filtered_data = data[data['FECHA'] >= pd.Timestamp(cutoff_date)]
 
-            # Filter by Molino
+            # Filter by MOLINO
             st.subheader("Filter Data by Molino")
-            unique_molinos = filtered_data['Molino'].dropna().unique()
+            unique_molinos = filtered_data['MOLINO'].dropna().unique()
             selected_molino = st.selectbox("Select Molino:", ["All"] + list(unique_molinos))
             if selected_molino != "All":
-                filtered_data = filtered_data[filtered_data['Molino'] == selected_molino]
+                filtered_data = filtered_data[filtered_data['MOLINO'] == selected_molino]
 
-            # Filter by Tipo
+            # Filter by TIPO
             st.subheader("Filter Data by Tipo")
-            unique_tipos = filtered_data['Tipo'].dropna().unique()
+            unique_tipos = filtered_data['TIPO'].dropna().unique()
             selected_tipo = st.selectbox("Select Tipo:", ["All"] + list(unique_tipos))
             if selected_tipo != "All":
-                filtered_data = filtered_data[filtered_data['Tipo'] == selected_tipo]
+                filtered_data = filtered_data[filtered_data['TIPO'] == selected_tipo]
 
             # Cleaning: Remove rows with 0 or invalid values
             st.subheader("Clean Data")
