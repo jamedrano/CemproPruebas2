@@ -84,4 +84,4 @@ with tab3:
 
 # Footer
 st.markdown("---")
-st.markdown("Developed with ❤️ using Streamlit.")
+st.markdown("Developed by CepSA with ❤️ using Streamlit.")
