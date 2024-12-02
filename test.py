@@ -85,6 +85,9 @@ with tab1:
                     lambda x: pd.NA if isinstance(x, (int, float)) and x < 0 else x
                 )  # Replace negatives with NaN
                 cleaned_data = cleaned_data.dropna()  # Drop rows with any NaN values
+                numfeatures = [col for col in cleaned_data.columns if col not in ['MOLINO', 'TIPO','FECHA']]
+                for numfeature in numfeatures:
+                    cleaned_data[numfeature] = pd.to_numeric(cleaned_data[numfeature], errors='coerce')
 
                 # Display the cleaned data
                 st.subheader("Cleaned Data")
