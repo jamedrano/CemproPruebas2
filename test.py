@@ -172,7 +172,7 @@ with tab3:
 
         # Segmented descriptive statistics
         st.subheader("Segmented Descriptive Statistics")
-        st.markdown("Descriptive statistics for resistance columns segmented by **MOLINO** and **TIPO**.")
+        st.markdown("Descriptive statistics for resistance columns segmented by **MOLINO**, **TIPO**, and combinations of both.")
 
         # Segment by MOLINO
         st.subheader("Segmented by MOLINO")
@@ -205,6 +205,22 @@ with tab3:
                     "Quantiles (25%, 50%, 75%)": column_data.quantile([0.25, 0.5, 0.75]).to_dict()
                 }
             st.write(pd.DataFrame(tipo_stats).transpose())
+
+        # Segment by MOLINO and TIPO combinations
+        st.subheader("Segmented by MOLINO and TIPO")
+        for (molino, tipo), group_data in cleaned_data.groupby(['MOLINO', 'TIPO']):
+            st.markdown(f"**MOLINO: {molino}, TIPO: {tipo}**")
+            combined_stats = {}
+            for col in resistance_columns:
+                column_data = group_data[col].dropna()
+                combined_stats[col] = {
+                    "Mean": column_data.mean(),
+                    "Median": column_data.median(),
+                    "Range": column_data.max() - column_data.min(),
+                    "Standard Deviation": column_data.std(),
+                    "Quantiles (25%, 50%, 75%)": column_data.quantile([0.25, 0.5, 0.75]).to_dict()
+                }
+            st.write(pd.DataFrame(combined_stats).transpose())
     else:
         st.info("Please upload and clean the data in Tab 1 first.")
 
