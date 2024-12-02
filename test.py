@@ -5,6 +5,26 @@ import matplotlib.pyplot as plt
 # App title
 st.title("Cement Compression Strength: Data Viewer, Filtering, and Cleaning")
 
+# Function to load and clean data (cached)
+@st.cache_data
+def load_data(file, sheet_name):
+    # Load the selected sheet
+    data = pd.read_excel(file, sheet_name=sheet_name)
+
+    # Clean column names: remove extra spaces and capitalize
+    data.columns = data.columns.str.strip().str.upper()
+
+    # Ensure 'FECHA' is in datetime format
+    if 'FECHA' in data.columns:
+        data['FECHA'] = pd.to_datetime(data['FECHA'], errors='coerce')
+
+    return data
+
+# Function to filter data by date (cached)
+@st.cache_data
+def filter_data_by_date(data, cutoff_date):
+    return data[data['FECHA'] >= pd.Timestamp(cutoff_date)]
+
 # Add tabs to the app
 tab1, tab2, tab3 = st.tabs(["Data Cleaning", "Visualizations", "Tab 3"])
 
@@ -23,17 +43,13 @@ with tab1:
             st.subheader("Select the sheet to load")
             selected_sheet = st.selectbox("Choose a sheet:", sheet_names)
 
-            # Load the selected sheet
-            data = pd.read_excel(uploaded_file, sheet_name=selected_sheet)
-
-            # Clean column names: remove extra spaces and capitalize
-            data.columns = data.columns.str.strip().str.upper()
+            # Load the data (cached)
+            data = load_data(uploaded_file, selected_sheet)
 
             # Ensure necessary columns exist
             required_columns = ['FECHA', 'MOLINO', 'TIPO', 'R1D', 'R3D', 'R7D', 'R28D']
             if all(col in data.columns for col in required_columns):
-                # Convert 'FECHA' column to datetime format
-                data['FECHA'] = pd.to_datetime(data['FECHA'], errors='coerce')
+                # Drop rows with invalid dates
                 data = data.dropna(subset=['FECHA'])
 
                 # Display the data before filtering
@@ -46,7 +62,9 @@ with tab1:
                     "Select a cutoff date:",
                     value=data['FECHA'].min().date() if not data.empty else None,
                 )
-                filtered_data = data[data['FECHA'] >= pd.Timestamp(cutoff_date)]
+
+                # Filter the data by date (cached)
+                filtered_data = filter_data_by_date(data, cutoff_date)
 
                 # Cleaning: Remove rows with 0, negative, or invalid values
                 st.subheader("Clean Data")
