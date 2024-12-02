@@ -241,7 +241,7 @@ with tab3:
 #tab4 = st.tab("Predictive Modeling")
 
 with tab4:
-    d = cleaned_data.dtypes.reset_index().rename(columns={'index':'Field Name',0:'Field Type'}).sort_values(by='Field Type',ascending=False).reset_index(drop=True)
+    fd = cleaned_data.dtypes.reset_index().rename(columns={'index':'Field Name',0:'Field Type'}).sort_values(by='Field Type',ascending=False).reset_index(drop=True)
     st.dataframe(fd, use_container_width=True)
 
 # Footer
