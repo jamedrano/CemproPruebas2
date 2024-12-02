@@ -26,7 +26,7 @@ def filter_data_by_date(data, cutoff_date):
     return data[data['FECHA'] >= cutoff_date]
 
 # Add tabs to the app
-tab1, tab2, tab3 = st.tabs(["Data Cleaning", "Visualizations", "Descriptive Analytics"])
+tab1, tab2, tab3, tab4 = st.tabs(["Data Cleaning", "Visualizations", "Descriptive Analytics", "Model Training"])
 
 # Tab 1: Data Cleaning
 with tab1:
@@ -223,6 +223,11 @@ with tab3:
             st.write(pd.DataFrame(combined_stats).transpose())
     else:
         st.info("Please upload and clean the data in Tab 1 first.")
+
+# Tab 4:  Model Training
+
+with tab4:
+    st.write("Model Training")
 
 # Footer
 st.markdown("---")
