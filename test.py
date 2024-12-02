@@ -239,10 +239,6 @@ with tab3:
 
 # Tab 4:  Model Training
 
-
-# Add a fourth tab for predictive modeling
-tab4 = st.tab("Predictive Modeling")
-
 with tab4:
     if 'cleaned_data' in locals():
         st.subheader("Predictive Modeling by MOLINO and TIPO")
