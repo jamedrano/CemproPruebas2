@@ -67,7 +67,7 @@ with tab1:
         except Exception as e:
             st.error(f"An error occurred while processing the file: {e}")
     else:
-        st.info("Please upload an Excel file to proceed.")
+        st.info("Please upload and clean the data in Tab 1 first.")
 
 # Tab 2: Visualizations
 with tab2:
@@ -105,14 +105,15 @@ with tab2:
                 axes[i].set_xlabel('Resistance')
                 axes[i].set_ylabel('Frequency')
             elif chart_type == 'Boxplot':
-                axes[i].boxplot(filtered_viz_data[col].dropna(), vert=False)
+                axes[i].boxplot(filtered_viz_data[col].dropna(), vert=True)  # Set boxplot to vertical
                 axes[i].set_title(f'{col} - Boxplot')
-                axes[i].set_xlabel('Resistance')
+                axes[i].set_ylabel('Resistance')
             elif chart_type == 'Trend Chart':
                 axes[i].plot(filtered_viz_data['FECHA'], filtered_viz_data[col], marker='o', linestyle='-')
                 axes[i].set_title(f'{col} - Trend Chart')
                 axes[i].set_xlabel('Date')
                 axes[i].set_ylabel('Resistance')
+                axes[i].tick_params(axis='x', rotation=90)  # Rotate x-axis labels vertically
 
         plt.tight_layout()
         st.pyplot(fig)
