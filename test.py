@@ -142,13 +142,22 @@ with tab2:
 with tab3:
     if 'cleaned_data' in locals():
         st.subheader("Descriptive Analytics")
-        st.markdown("Summary statistics for **R1D, R3D, R7D, R28D**, and frequency counts for **MOLINO** and **TIPO**.")
+        st.markdown("Detailed descriptive statistics for resistance columns and frequency counts for **MOLINO** and **TIPO**.")
 
         # Descriptive statistics for resistance columns
         resistance_columns = ['R1D', 'R3D', 'R7D', 'R28D']
         st.subheader("Resistance Summary Statistics")
-        resistance_stats = cleaned_data[resistance_columns].describe()
-        st.write(resistance_stats)
+        summary_stats = {}
+        for col in resistance_columns:
+            column_data = cleaned_data[col].dropna()
+            summary_stats[col] = {
+                "Mean": column_data.mean(),
+                "Median": column_data.median(),
+                "Range": column_data.max() - column_data.min(),
+                "Standard Deviation": column_data.std(),
+                "Quantiles (25%, 50%, 75%)": column_data.quantile([0.25, 0.5, 0.75]).to_dict()
+            }
+        st.write(pd.DataFrame(summary_stats).transpose())
 
         # Frequency counts for MOLINO and TIPO
         st.subheader("Frequency Counts for MOLINO and TIPO")
@@ -169,15 +178,33 @@ with tab3:
         st.subheader("Segmented by MOLINO")
         for molino, group_data in cleaned_data.groupby('MOLINO'):
             st.markdown(f"**MOLINO: {molino}**")
-            molino_stats = group_data[resistance_columns].describe()
-            st.write(molino_stats)
+            molino_stats = {}
+            for col in resistance_columns:
+                column_data = group_data[col].dropna()
+                molino_stats[col] = {
+                    "Mean": column_data.mean(),
+                    "Median": column_data.median(),
+                    "Range": column_data.max() - column_data.min(),
+                    "Standard Deviation": column_data.std(),
+                    "Quantiles (25%, 50%, 75%)": column_data.quantile([0.25, 0.5, 0.75]).to_dict()
+                }
+            st.write(pd.DataFrame(molino_stats).transpose())
 
         # Segment by TIPO
         st.subheader("Segmented by TIPO")
         for tipo, group_data in cleaned_data.groupby('TIPO'):
             st.markdown(f"**TIPO: {tipo}**")
-            tipo_stats = group_data[resistance_columns].describe()
-            st.write(tipo_stats)
+            tipo_stats = {}
+            for col in resistance_columns:
+                column_data = group_data[col].dropna()
+                tipo_stats[col] = {
+                    "Mean": column_data.mean(),
+                    "Median": column_data.median(),
+                    "Range": column_data.max() - column_data.min(),
+                    "Standard Deviation": column_data.std(),
+                    "Quantiles (25%, 50%, 75%)": column_data.quantile([0.25, 0.5, 0.75]).to_dict()
+                }
+            st.write(pd.DataFrame(tipo_stats).transpose())
     else:
         st.info("Please upload and clean the data in Tab 1 first.")
 
