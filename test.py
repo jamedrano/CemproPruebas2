@@ -26,7 +26,7 @@ def filter_data_by_date(data, cutoff_date):
     return data[data['FECHA'] >= cutoff_date]
 
 # Add tabs to the app
-tab1, tab2, tab3 = st.tabs(["Data Cleaning", "Visualizations", "Tab 3"])
+tab1, tab2, tab3 = st.tabs(["Data Cleaning", "Visualizations", "Descriptive Analytics"])
 
 # Tab 1: Data Cleaning
 with tab1:
@@ -138,10 +138,30 @@ with tab2:
     else:
         st.info("Please upload and clean the data in Tab 1 first.")
 
-# Placeholder content for Tab 3
+# Tab 3: Descriptive Analytics
 with tab3:
-    st.subheader("Tab 3 Content")
-    st.write("This is Tab 3. Additional functionality can be added here.")
+    if 'cleaned_data' in locals():
+        st.subheader("Descriptive Analytics")
+        st.markdown("Summary statistics for **R1D, R3D, R7D, R28D**, and frequency counts for **MOLINO** and **TIPO**.")
+
+        # Descriptive statistics for resistance columns
+        resistance_columns = ['R1D', 'R3D', 'R7D', 'R28D']
+        st.subheader("Resistance Summary Statistics")
+        resistance_stats = cleaned_data[resistance_columns].describe()
+        st.write(resistance_stats)
+
+        # Frequency counts for MOLINO and TIPO
+        st.subheader("Frequency Counts for MOLINO and TIPO")
+        molino_counts = cleaned_data['MOLINO'].value_counts()
+        tipo_counts = cleaned_data['TIPO'].value_counts()
+
+        st.markdown("**MOLINO Counts**")
+        st.write(molino_counts)
+
+        st.markdown("**TIPO Counts**")
+        st.write(tipo_counts)
+    else:
+        st.info("Please upload and clean the data in Tab 1 first.")
 
 # Footer
 st.markdown("---")
