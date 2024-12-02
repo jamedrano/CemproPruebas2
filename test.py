@@ -11,7 +11,7 @@ if uploaded_file is not None:
     try:
         # Load the Excel sheet
         excel_data = pd.ExcelFile(uploaded_file)
-        sheet_name = "Datos Modelo"  # Predefined sheet name
+        sheet_name = "Datos Modelo "  # Predefined sheet name
 
         if sheet_name in excel_data.sheet_names:
             # Load the data
