@@ -243,6 +243,7 @@ with tab3:
 with tab4:
     fd = cleaned_data.dtypes.reset_index().rename(columns={'index':'Field Name',0:'Field Type'}).sort_values(by='Field Type',ascending=False).reset_index(drop=True)
     st.dataframe(fd, use_container_width=True)
+    st.dataframe(cleaned_data.head())
 
 # Footer
 st.markdown("---")
