@@ -6,7 +6,7 @@ import os
 # Streamlit app title
 st.title("File Uploader to GitHub")
 
-github_token = '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'
+github_token = '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'
 repo_name = 'jamedrano/CemproPruebas2'
 
 
