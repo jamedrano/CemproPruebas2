@@ -11,9 +11,13 @@ repo_name = 'jamedrano/CemproPruebas2'
 
 # File upload widget
 uploaded_file = st.file_uploader("Upload a file", type=None)
+
 token_file = st.file_uploader("Upload token file (e.g., token.txt)", type=["txt"])
-github_token = token_file.read().decode("utf-8").strip()
-st.write(github_token)
+if token_file:
+    github_token = token_file.read().decode("utf-8").strip()
+    st.write(github_token)
+else:
+    st.write("subir el archivo del token")
 
 if uploaded_file and github_token and repo_name:
     st.success("Ready to upload!")
@@ -39,7 +43,7 @@ if uploaded_file and github_token and repo_name:
                 branch="main"  # Default branch
             )
 
-            st.success(f"File '{file_name}' uploaded successfully to {repo_name} in {folder_path or 'root'}!")
+            st.success(f"File '{file_name}' uploaded successfully to {repo_name} in {'root'}!")
         except Exception as e:
             st.error(f"Error: {e}")
 else:
