@@ -34,16 +34,31 @@ if uploaded_file and github_token and repo_name:
 
             content = uploaded_file.read()
             b64_data = base64.b64encode(content).decode('utf-8')
+            try:
+                existing_file = repo.get_contents(file_path, ref="main")
+                # File exists: update it
+                repo.update_file(
+                    path=file_path,
+                    message=f"Update {file_name}",
+                    content=uploaded_file.getvalue(),
+                    sha=existing_file.sha,  # Use the file's SHA to update
+                    branch="main"
+                )
+                st.success(f"File '{file_name}' updated successfully in {repo_name}!")
+            except Exception as e:
+                if "404" in str(e):  # File does not exist
+                    # Create the file
+                    repo.create_file(
+                        path=file_path,
+                        message=f"Add {file_name}",
+                        content=uploaded_file.getvalue(),
+                        branch="main"
+                    )
+                    st.success(f"File '{file_name}' created successfully in {repo_name}!")
+                else:
+                    raise e  # Re-raise other errors      
 
-            # Create the file in the repository
-            repo.create_file(
-                path=file_path,
-                message=f"Add {file_name}",
-                content=b64_data,
-                branch="main"  # Default branch
-            )
-
-            st.success(f"File '{file_name}' uploaded successfully to {repo_name} in {'root'}!")
+            
         except Exception as e:
             st.error(f"Error: {e}")
 else:
