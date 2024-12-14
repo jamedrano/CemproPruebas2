@@ -376,14 +376,11 @@ with tab4:
 
             # Add trained models for this segment to session state
             st.session_state.models[(molino, tipo)] = segment_models
-        
-        # Add a button to save the models to the repo
-        if st.button("Save Models to Repository"):
-            if st.session_state.models:
-                save_models_to_repo(st.session_state.models)
-            else:
-                st.warning("No models have been trained yet. Train the models first.")
 
+        # Automatically save models after training if any models were trained
+        if st.session_state.models:
+            save_models_to_repo(st.session_state.models)
+       
     else:
         st.info("Please upload and clean the data in Tab 1 first.")
 
