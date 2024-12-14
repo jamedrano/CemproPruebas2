@@ -9,6 +9,8 @@ from pyxlsb import open_workbook as open_xlsb
 import pickle
 import xgboost as xgb
 import os
+import zipfile #Added this line
+
 
 # App title
 st.title("Cement Compression Strength: Out-of-Sample Prediction")
@@ -96,6 +98,7 @@ with tab1:
             st.error(f"An error occurred while processing the file: {e}")
     else:
         st.info("Please upload and clean the data in Tab 1 first.")
+
 # Tab 2: Predictions
 with tab2:
     st.subheader("Upload Trained Models")
@@ -127,4 +130,3 @@ with tab2:
             st.success("Models loaded successfully!")
         except Exception as e:
             st.error(f"An error occurred while processing the model file: {e}")
-
