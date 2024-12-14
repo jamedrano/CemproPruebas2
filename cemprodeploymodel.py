@@ -212,3 +212,7 @@ with tab2:
             st.info("Please upload and clean the data in Tab 1 first.")
         elif 'loaded_models' not in st.session_state or not st.session_state.loaded_models:
             st.info("Please upload the models in Tab 2 first.")
+
+# Footer
+st.markdown("---")
+st.markdown("Developed by CepSA with ❤️ using Streamlit.")
