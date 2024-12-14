@@ -99,6 +99,7 @@ with tab1:
     else:
         st.info("Please upload and clean the data in Tab 1 first.")
 
+
 # Tab 2: Predictions
 with tab2:
     st.subheader("Upload Trained Models")
@@ -189,11 +190,25 @@ with tab2:
                   st.warning(f"No model found for MOLINO: {molino}, TIPO: {tipo}. Skipping prediction.")
            st.subheader("Prediction Results")
            st.write(prediction_data)
+
+           # Function to convert the DataFrame to an Excel file
+           def to_excel(df):
+                output = BytesIO()
+                writer = pd.ExcelWriter(output, engine='xlsxwriter')
+                df.to_excel(writer, sheet_name='Predictions', index=False)
+                writer.close()
+                processed_data = output.getvalue()
+                return processed_data
+
+           #Download button
+           st.download_button(
+                label="Download Predictions (.xlsx)",
+                data=to_excel(prediction_data),
+                file_name='predictions.xlsx',
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+           )
+
         elif 'cleaned_data' not in locals():
             st.info("Please upload and clean the data in Tab 1 first.")
         elif 'loaded_models' not in st.session_state or not st.session_state.loaded_models:
             st.info("Please upload the models in Tab 2 first.")
-
-
-
-
