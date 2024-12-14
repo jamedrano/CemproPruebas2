@@ -12,6 +12,21 @@ import sklearn.metrics as mt
 import pickle
 import xgboost as xgb
 import os
+import zipfile
+
+# Function to create a zip file containing all the models
+def create_downloadable_zip(models):
+    """Creates a zip file containing all trained models."""
+    
+    zip_buffer = BytesIO()
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        for (molino, tipo), segment_models in models.items():
+            for model_name, model in segment_models.items():
+                model_filename = f"model_{molino}_{tipo}_{model_name}.pkl"
+                zip_file.writestr(model_filename, pickle.dumps(model)) #save the model as bytes inside the zip file
+
+    zip_buffer.seek(0) # Rewind to the beginning of the buffer
+    return zip_buffer
 
 # App title
 st.title("Cement Compression Strength: Data Viewer, Filtering, and Cleaning")
@@ -35,19 +50,6 @@ def load_data(file, sheet_name):
 @st.cache_data
 def filter_data_by_date(data, cutoff_date):
     return data[data['FECHA'] >= cutoff_date]
-
-# Function to save models to a local folder within the repository
-def save_models_to_repo(models, models_dir="models"):
-    """Saves the trained models to a local folder within the repo."""
-    if not os.path.exists(models_dir):
-        os.makedirs(models_dir)
-
-    for (molino, tipo), segment_models in models.items():
-         for model_name, model in segment_models.items():
-            filename = os.path.join(models_dir, f"model_{molino}_{tipo}_{model_name}.pkl")
-            with open(filename, "wb") as f:
-                pickle.dump(model, f)
-    st.success("Models saved successfully to the 'models' folder in the repo.")
 
 # Add tabs to the app
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["Data Cleaning", "Visualizations", "Descriptive Analytics", "Model Training","In Sample Predictions"])
@@ -376,11 +378,17 @@ with tab4:
 
             # Add trained models for this segment to session state
             st.session_state.models[(molino, tipo)] = segment_models
-
-        # Automatically save models after training if any models were trained
+        
+        # Create Download Button only if models are available
         if st.session_state.models:
-            save_models_to_repo(st.session_state.models)
-       
+            st.markdown("### Download Models")
+            zip_buffer = create_downloadable_zip(st.session_state.models)
+            st.download_button(
+                label="Download Trained Models (.zip)",
+                data=zip_buffer,
+                file_name="trained_models.zip",
+                mime="application/zip",
+            )
     else:
         st.info("Please upload and clean the data in Tab 1 first.")
 
