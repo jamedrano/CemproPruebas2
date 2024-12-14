@@ -130,3 +130,70 @@ with tab2:
             st.success("Models loaded successfully!")
         except Exception as e:
             st.error(f"An error occurred while processing the model file: {e}")
+
+        if 'cleaned_data' in locals() and 'loaded_models' in st.session_state and st.session_state.loaded_models:
+           st.markdown("### Performing Out-of-Sample Predictions")
+           
+           # Make a copy of the data to avoid modifying the original
+           prediction_data = cleaned_data.copy()
+            
+           # Create empty columns to store the predictions
+           prediction_data['R1D'] = pd.NA
+           prediction_data['R3D'] = pd.NA
+           prediction_data['R7D'] = pd.NA
+           prediction_data['R28D'] = pd.NA
+
+           # Predict for each row in the dataframe
+           for index, row in prediction_data.iterrows():
+               molino = row['MOLINO']
+               tipo = row['TIPO']
+
+                # Check if model exists for this MOLINO and TIPO combination
+               if (molino, tipo) in st.session_state.loaded_models:
+                   models = st.session_state.loaded_models[(molino, tipo)]
+                   features = [col for col in prediction_data.columns if col not in ['R1D', 'R3D', 'R7D', 'R28D', 'MOLINO', 'TIPO', 'FECHA']]
+                
+                   try:
+                       # Stage 1: Predict R1D
+                       X_R1D = row[features].values.reshape(1, -1)
+                       R1D_pred = models['R1D'].predict(X_R1D)[0]
+                       prediction_data.loc[index,'R1D'] = R1D_pred
+
+                       # Stage 2: Predict R3D
+                       X_R3D = row[features].to_list()
+                       X_R3D.append(R1D_pred)
+                       X_R3D = np.array(X_R3D).reshape(1, -1)
+                       R3D_pred = models['R3D'].predict(X_R3D)[0]
+                       prediction_data.loc[index,'R3D'] = R3D_pred
+
+                        # Stage 3: Predict R7D
+                       X_R7D = row[features].to_list()
+                       X_R7D.append(R1D_pred)
+                       X_R7D.append(R3D_pred)
+                       X_R7D = np.array(X_R7D).reshape(1, -1)
+                       R7D_pred = models['R7D'].predict(X_R7D)[0]
+                       prediction_data.loc[index,'R7D'] = R7D_pred
+
+                       # Stage 4: Predict R28D
+                       X_R28D = row[features].to_list()
+                       X_R28D.append(R1D_pred)
+                       X_R28D.append(R3D_pred)
+                       X_R28D.append(R7D_pred)
+                       X_R28D = np.array(X_R28D).reshape(1, -1)
+                       R28D_pred = models['R28D'].predict(X_R28D)[0]
+                       prediction_data.loc[index,'R28D'] = R28D_pred
+                   except Exception as e:
+                       st.error(f"Error during prediction for MOLINO: {molino}, TIPO: {tipo} - {e}")
+                
+               else:
+                  st.warning(f"No model found for MOLINO: {molino}, TIPO: {tipo}. Skipping prediction.")
+           st.subheader("Prediction Results")
+           st.write(prediction_data)
+        elif 'cleaned_data' not in locals():
+            st.info("Please upload and clean the data in Tab 1 first.")
+        elif 'loaded_models' not in st.session_state or not st.session_state.loaded_models:
+            st.info("Please upload the models in Tab 2 first.")
+
+
+
+
