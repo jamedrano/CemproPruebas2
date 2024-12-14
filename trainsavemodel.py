@@ -409,7 +409,7 @@ with tab5:
             X_R1D = segment_data[features]
             y_R1D = segment_data['R1D']
             y_pred_R1D = models['R1D'].predict(X_R1D)
-            rmse_R1D = mt.mean_squared_error(y_R1D, y_pred_R1D, squared=False)
+            rmse_R1D = np.sqrt(mt.mean_squared_error(y_R1D, y_pred_R1D))
             st.write(f"RMSE for R1D: {rmse_R1D:.2f}")
             st.write(pd.DataFrame({'Actual': y_R1D, 'Predicted': y_pred_R1D}))
 
@@ -427,7 +427,7 @@ with tab5:
             X_R3D['R1D'] = y_pred_R1D  # Use predictions for R1D
             y_R3D = segment_data['R3D']
             y_pred_R3D = models['R3D'].predict(X_R3D)
-            rmse_R3D = mt.mean_squared_error(y_R3D, y_pred_R3D, squared=False)
+            rmse_R3D = np.sqrt(mt.mean_squared_error(y_R3D, y_pred_R3D))
             st.write(f"RMSE for R3D: {rmse_R3D:.2f}")
             st.write(pd.DataFrame({'Actual': y_R3D, 'Predicted': y_pred_R3D}))
 
@@ -446,7 +446,7 @@ with tab5:
             X_R7D['R3D'] = y_pred_R3D  # Use predictions for R3D
             y_R7D = segment_data['R7D']
             y_pred_R7D = models['R7D'].predict(X_R7D)
-            rmse_R7D = mt.mean_squared_error(y_R7D, y_pred_R7D, squared=False)
+            rmse_R7D = np.sqrt(mt.mean_squared_error(y_R7D, y_pred_R7D))
             st.write(f"RMSE for R7D: {rmse_R7D:.2f}")
             st.write(pd.DataFrame({'Actual': y_R7D, 'Predicted': y_pred_R7D}))
 
@@ -467,7 +467,7 @@ with tab5:
             X_R28D['R7D'] = y_pred_R7D  # Use predictions for R7D
             y_R28D = segment_data['R28D']
             y_pred_R28D = models['R28D'].predict(X_R28D)
-            rmse_R28D = mt.mean_squared_error(y_R28D, y_pred_R28D, squared=False)
+            rmse_R28D = np.sqrt(mt.mean_squared_error(y_R28D, y_pred_R28D))
             st.write(f"RMSE for R28D: {rmse_R28D:.2f}")
             st.write(pd.DataFrame({'Actual': y_R28D, 'Predicted': y_pred_R28D}))
 
