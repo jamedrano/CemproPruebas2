@@ -96,3 +96,35 @@ with tab1:
             st.error(f"An error occurred while processing the file: {e}")
     else:
         st.info("Please upload and clean the data in Tab 1 first.")
+# Tab 2: Predictions
+with tab2:
+    st.subheader("Upload Trained Models")
+    # File uploader for zip files
+    uploaded_models_zip = st.file_uploader("Upload your models (.zip)", type=["zip"])
+
+    if uploaded_models_zip is not None:
+        try:
+            # Initialize session state for models if not already present
+            if 'loaded_models' not in st.session_state:
+                st.session_state.loaded_models = {}
+            
+            # Load Models
+            st.markdown("#### Loading Models...")
+            with zipfile.ZipFile(uploaded_models_zip, 'r') as zip_file:
+                 for file_name in zip_file.namelist():
+                     if file_name.endswith('.pkl'): #ensure only pkl files are read
+                         with zip_file.open(file_name) as model_file:
+                             model = pickle.load(model_file)
+                             parts = file_name.replace('.pkl', '').split('_')
+                             if len(parts) == 4:
+                                 _, molino, tipo, model_name = parts
+                                 if (molino, tipo) not in st.session_state.loaded_models:
+                                     st.session_state.loaded_models[(molino, tipo)] = {}
+                                 st.session_state.loaded_models[(molino, tipo)][model_name] = model
+                             else:
+                                st.error(f"Skipping model with invalid filename format: {file_name}")
+                                 
+            st.success("Models loaded successfully!")
+        except Exception as e:
+            st.error(f"An error occurred while processing the model file: {e}")
+
